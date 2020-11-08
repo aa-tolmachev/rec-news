@@ -41,7 +41,7 @@ def new_news():
     global model
     
     response = {'post_id':None,'summary':'coming soon','sentiment':None,'proba':None}
-    
+
     try:
         json_news = json.loads(request.get_data())
         print(json_news)
@@ -71,13 +71,15 @@ def new_news():
             response['proba'] = most_positive['proba']
             response['sentiment'] = most_positive['sentiment']
 
-        print(response)
+        
     except:
         #тест - для тестирования
         traceback.print_exc()
         return "!", 200
         
-    return response
+    response = json.dumps(response)
+    print(response)
+    return str(response)  , 200
 
 if __name__ == "__main__":
     port = int(os.getenv('PORT', 5000))
