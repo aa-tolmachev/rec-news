@@ -16,3 +16,4 @@ pyTelegramBotAPI
 matplotlib
 numpy
 fasttext
+bs4
