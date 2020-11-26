@@ -93,7 +93,9 @@ def new_news():
         traceback.print_exc()
         return "!", 200
         
-    return response
+    #for heroku
+    response = json.dumps(response)
+    return str(response)  , 200
 
 if __name__ == "__main__":
     port = int(os.getenv('PORT', 5000))
