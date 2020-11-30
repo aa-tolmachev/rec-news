@@ -17,4 +17,3 @@ matplotlib
 numpy
 fasttext
 bs4
-sentence-transformers==0.2.0

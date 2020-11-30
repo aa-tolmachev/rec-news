@@ -9,6 +9,7 @@ import traceback
 import fasttext
 
 from lib_summary import summary
+from lib_cleaner import cleaner
 
 
 application = Flask(__name__)  # Change assignment here
@@ -84,6 +85,9 @@ def new_news():
             url = response['url']
             url_main_text = summary.url_summary(url)
             response['summary'] = url_main_text['summary']
+
+            #3 - clean summary
+            response['summary'] = cleaner.fresh_text(url_main_text['summary'])
             
             
         print('3: ', response)
