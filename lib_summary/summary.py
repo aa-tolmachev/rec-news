@@ -46,7 +46,7 @@ def content_main_text(soup):
 
 
     ####### paragraph
-    par_arr = soup.findAll('p'  )
+    par_arr = soup.findAll('p'  )[:5]
     if par_arr:
         for p in par_arr:
             par += p.text
