@@ -63,7 +63,7 @@ def clean_duplicates(sentences):
             if cos_sim > max_cos_sim:
                 max_cos_sim = cos_sim
 
-        if max_cos_sim < 0.85:
+        if max_cos_sim < 0.8:
             new_sentences.append(s)
     return new_sentences
 

@@ -4,7 +4,7 @@ import re
 import traceback
 
 def make_summary(text):
-    smr_url = 'https://api.smrzr.io/summarize?ratio=0.15'
+    smr_url = 'https://api.smrzr.io/summarize?ratio=0.30'
 
     r = requests.post(smr_url, data=text.encode('utf-8'))
 
@@ -30,7 +30,8 @@ def content_main_text(soup):
     ##### meta
     meta_attr_dicts = [{'name':'description'},
                        {'property':'og:description'},
-                       {'property':'twitter:descriptionn'} 
+                       {'property':'twitter:descriptionn'} ,
+                       {'itemprop':'description'}
                       ]
     for meta_attr_dict in meta_attr_dicts:
         meta_arr = soup.findAll('meta', attrs=meta_attr_dict)
