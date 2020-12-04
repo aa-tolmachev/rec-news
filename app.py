@@ -15,8 +15,7 @@ from lib_cleaner import cleaner
 from lib_log import simple_log
 global module_name
 module_name = os.path.basename(__file__) #module name file
-global step
-step = 0
+
 
 
 
@@ -52,7 +51,7 @@ def test():
 def new_news():
     global model
     global module_name
-    global step
+    step = 0
     
     response = {'post_id':None,'summary':None,'sentiment':None,'proba':None,'url':None}
     

@@ -8,8 +8,7 @@ import os
 from lib_log import simple_log
 global module_name
 module_name = os.path.basename(__file__) #module name file
-global step
-step = 0
+
 
 
 def make_summary(text):
@@ -69,7 +68,7 @@ def content_main_text(soup):
 
 def url_summary(url):
     global module_name
-    global step
+    step = 0
     
     url_main_text = {'summary':None}
     
