@@ -12,20 +12,26 @@ def make_log(level,module_name , step, message=None ):
 
     #initial modules
     if module_name == 'app' and step == 0:
-        logging.info('=' * 30)
+        #logging.info('=' * 30)
+        print('=' * 30)
     elif step == 0:
-        logging.info('-' * 20)
+        #logging.info('-' * 20)
+        print('-' * 20)
 
 
     #log message
     if level == 'i':
-        logging.info(log_message)
+        #logging.info(log_message)
+        print(log_message)
     elif level == 'w':
-        logging.warning(log_message)
+        #logging.warning(log_message)
+        print(log_message)
     elif level == 'e':
-        logging.error(log_message)
+        #logging.error(log_message)
+        print(log_message)
     elif level == 'd':
-        logging.debug(log_message)
+        #logging.debug(log_message)
+        print(log_message)
 
 
     return step + 1
