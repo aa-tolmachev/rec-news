@@ -11,7 +11,7 @@ def make_log(level,module_name , step, message=None ):
                     }
 
     #initial modules
-    if module_name == 'app' and step == 0:
+    if module_name == 'app.py' and step == 0:
         #logging.info('=' * 30)
         print('=' * 30)
     elif step == 0:
