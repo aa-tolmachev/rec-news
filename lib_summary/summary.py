@@ -2,6 +2,15 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import traceback
+import os
+
+
+from lib_log import simple_log
+global module_name
+module_name = os.path.basename(__file__) #module name file
+global step
+step = 0
+
 
 def make_summary(text):
     smr_url = 'https://api.smrzr.io/summarize?ratio=0.30'
@@ -59,6 +68,8 @@ def content_main_text(soup):
     return total_text
 
 def url_summary(url):
+    global module_name
+    global step
     
     url_main_text = {'summary':None}
     
@@ -66,7 +77,7 @@ def url_summary(url):
         #0 - load content
         resp = requests.get(url)
         content = resp.text
-        print('0: ', len(content))
+        step = simple_log.make_log('i',module_name , step, message=f'load content - {len(content)}' )
 
         #1 - preprocess
         content = re.sub(r'<a.*>.*</a>', '', content)
@@ -77,18 +88,18 @@ def url_summary(url):
         for tag in tags:
             tag.replaceWith('')
 
-        print('1: ', 'clean tags done')
+        step = simple_log.make_log('i',module_name , step, message=f'clean tags' )
 
         #2 - generate main text
         main_text = content_main_text(soup)
 
-        print('2:',len(main_text))
+        step = simple_log.make_log('i',module_name , step, message=f'generate main text - {len(main_text)}' )
 
         #3 make summary
         summary_text = make_summary(main_text)
         url_main_text['summary'] = summary_text
 
-        print('3:',len(summary_text))
+        step = simple_log.make_log('i',module_name , step, message=f'len(summary_text) - {len(summary_text)}' )
     except:
         traceback.print_exc()
         

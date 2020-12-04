@@ -12,6 +12,14 @@ from lib_summary import summary
 from lib_cleaner import cleaner
 
 
+from lib_log import simple_log
+global module_name
+module_name = os.path.basename(__file__) #module name file
+global step
+step = 0
+
+
+
 application = Flask(__name__)  # Change assignment here
 
 global model
@@ -31,6 +39,7 @@ def hello():
 def test():
     global message_example
     global model
+
     
     for m in message_example['articles']:
         print(f"post_id:{m['post_id']} , sentiment:{model.predict(m['title'][0][0])} , proba:{model.predict(m['title'][1][0])}")
@@ -42,13 +51,15 @@ def test():
 @application.route("/new-news" , methods=['GET', 'POST'])  
 def new_news():
     global model
+    global module_name
+    global step
     
     response = {'post_id':None,'summary':None,'sentiment':None,'proba':None,'url':None}
     
     try:
         #0 - load input data
         json_news = json.loads(request.get_data())
-        print('1: ', json_news)
+        step = simple_log.make_log('i',module_name , step, message=response )
         
         #1 - find most positive news
         df = pd.DataFrame()
@@ -78,7 +89,7 @@ def new_news():
             response['sentiment'] = most_positive['sentiment']
             response['url'] = most_positive['url']
             
-        print('2: ', response)
+        step = simple_log.make_log('i',module_name , step, message=response )
         
         #2 - make summary
         if response['post_id']:  
@@ -90,9 +101,11 @@ def new_news():
             response['summary'] = cleaner.fresh_text(url_main_text['summary'])
             
             
-        print('3: ', response)
+        step = simple_log.make_log('i',module_name , step, message=response )
         
     except:
+        #log error
+        step = simple_log.make_log('e',module_name , step, message=response )
         #тест - для тестирования
         traceback.print_exc()
         return "!", 200
