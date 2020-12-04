@@ -99,7 +99,7 @@ def url_summary(url):
         summary_text = make_summary(main_text)
         url_main_text['summary'] = summary_text
 
-        step = simple_log.make_log('i',module_name , step, message=f'len(summary_text) - {len(summary_text)}' )
+        step = simple_log.make_log('end',module_name , step, message=f'len(summary_text) - {len(summary_text)}' )
     except:
         traceback.print_exc()
         
