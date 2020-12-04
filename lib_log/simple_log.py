@@ -32,7 +32,7 @@ def make_log(level,module_name , step, message=None ):
     elif level == 'd':
         #logging.debug(log_message)
         print(log_message)
-    elif level == 'end'
+    elif level == 'end':
         #logging.debug(log_message)
         print(log_message)
         #logging.info('<' * 20)
