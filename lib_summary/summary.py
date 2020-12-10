@@ -12,7 +12,7 @@ module_name = os.path.basename(__file__) #module name file
 
 
 def make_summary(text):
-    smr_url = 'https://api.smrzr.io/summarize?ratio=0.30'
+    smr_url = 'https://api.smrzr.io/v1/summarize?ratio=0.3'
 
     r = requests.post(smr_url, data=text.encode('utf-8'))
 
