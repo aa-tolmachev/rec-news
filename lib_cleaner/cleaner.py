@@ -18,6 +18,7 @@ def clean_tech(sentences):
         s_new = re.sub(r'\:.*\:.*', '', s)
         s_new = re.sub(r'\W+$', '', s_new)
         s_new = re.sub(r'^\W+', '', s_new)
+        s_new = re.sub(r'\|.*', '', s)
 
         sentences_new.append(s_new)
         
