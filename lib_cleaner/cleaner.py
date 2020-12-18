@@ -74,6 +74,7 @@ def add_dots(sentences):
 
     for s in sentences:
         s += '.'
+        s = re.sub(r'\.+', '.', s)
         new_sentences.append(s)
         
     return new_sentences
