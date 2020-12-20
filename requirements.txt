@@ -17,3 +17,4 @@ matplotlib
 numpy
 fasttext
 bs4
+markovify==0.8.3
