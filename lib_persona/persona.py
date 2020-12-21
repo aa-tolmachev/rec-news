@@ -5,6 +5,7 @@ from lib_log import simple_log
 global module_name
 module_name = os.path.basename(__file__) #module name file
 
+
 with open ("./data/telegram_zhabi.txt", "r") as myfile:
     persona_context =myfile.readlines()
 persona_context = " ".join(persona_context)
@@ -30,7 +31,7 @@ def add_persona_first_sentence(text):
             ,'Видос', 'Толмач','https']
 
     max_persona_sentence = ''
-    max_persona_sentence_len = 0
+    max_persona_sentence_len = 100
 
     for i in range(30):
         p_sentence = model_combo.make_sentence()
@@ -40,7 +41,7 @@ def add_persona_first_sentence(text):
             for n in names:
                 if n in p_sentence:
                     is_name = 1
-            if is_name == 0 and len(p_sentence) > max_persona_sentence_len:
+            if is_name == 0 and len(p_sentence) < max_persona_sentence_len:
                 max_persona_sentence = p_sentence
                 max_persona_sentence_len = len(p_sentence)
     step = simple_log.make_log('i',module_name , step, message=f'make persona fst sentence - {max_persona_sentence}' )
@@ -49,7 +50,7 @@ def add_persona_first_sentence(text):
             
     #make text with persona first sentence
     if max_persona_sentence != '':
-        text = max_persona_sentence + '\n\n' + text
+        text = max_persona_sentence + '\n\n' +text
 
     step = simple_log.make_log('end',module_name , step, message=f'first persona sentence added' )
         
