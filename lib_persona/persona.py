@@ -23,7 +23,7 @@ def add_persona_first_sentence(text):
     step = simple_log.make_log('i',module_name , step, message=f'create markov models' )
     
     #make combo markov model
-    model_combo = markovify.combine([ persona_model, text_model ], [ 2, 10 ])
+    model_combo = markovify.combine([ persona_model, persona_model ], [ 2, 10 ])
     
     #generate sentences
     names = ['Сан', 'Макс','Гриш','stqr','Грих','Коля','Бельгии','\\u','?','0','собеседовании' ,'Александр'
