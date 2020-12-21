@@ -49,7 +49,7 @@ def add_persona_first_sentence(text):
             
     #make text with persona first sentence
     if max_persona_sentence != '':
-        text = max_persona_sentence, '\n\n',text
+        text = max_persona_sentence + '\n\n' + text
 
     step = simple_log.make_log('end',module_name , step, message=f'first persona sentence added' )
         
