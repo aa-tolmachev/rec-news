@@ -27,7 +27,7 @@ def add_persona_first_sentence(text):
     
     #generate sentences
     names = ['Сан', 'Макс','Гриш','stqr','Грих','Коля','Бельгии','\\u','?','0','собеседовании' ,'Александр'
-            ,'Видос', 'Толмач']
+            ,'Видос', 'Толмач','https']
 
     max_persona_sentence = ''
     max_persona_sentence_len = 0
