@@ -98,11 +98,11 @@ def new_news():
 
             #3 - clean summary
             clean_summary = cleaner.fresh_text(url_main_text['summary'])
-            #response['summary'] = clean_summary
+            response['summary'] = clean_summary
             
             #4 - add persona sentence
             persona_clean_summary = persona.add_persona_first_sentence(clean_summary)
-            response['summary'] = persona_clean_summary
+            #response['summary'] = persona_clean_summary
             
             
         step = simple_log.make_log('i',module_name , step, message=response )
