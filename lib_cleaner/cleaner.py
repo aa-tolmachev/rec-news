@@ -15,12 +15,22 @@ def clean_tech(sentences):
     sentences_new = []
 
     for s in sentences:
+        
         s_new = re.sub(r'\:.*\:.*', '', s)
         s_new = re.sub(r'\W+$', '', s_new)
         s_new = re.sub(r'^\W+', '', s_new)
         s_new = re.sub(r'\|.*', '', s)
         s_new = re.sub(r'\@.*', '', s)
+        
+        s_new = re.sub(r'\{.*\}', '' ,  s)
 
+        
+        s_new = re.sub(r'\S+\.\w\w$', '.' ,  s)
+        
+        s_new = re.sub(r'\:.*\:.*', '.' ,  s)
+
+
+        
         sentences_new.append(s_new)
         
     return sentences_new
