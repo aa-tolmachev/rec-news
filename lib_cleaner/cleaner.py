@@ -110,7 +110,7 @@ def interfaxdecode(sentences): # Кодировка интерафкса
 
 
 def teleformat(sentences): # Форматирование в телеге
-    sentences[0] = "**" + sentences[0] + "**\n"
+    sentences[0] = "<b>" + sentences[0] + "</b>\n"
     
     return sentences
 
