@@ -117,9 +117,7 @@ def metalinkscleaner(sentences): # Очистка всякого говнища
     if "Allhockey" in " ".join(sentences):
         return ["", ""]
     if ":: РБК" in sentences[0]:
-        print(">>>>>>>>", sentences[0])
         sentences[0] = sentences[0].replace(sentences[0][sentences[0].find("::")-1:sentences[0].find(".", sentences[0].find("::"), len(sentences[0]))+1], "")
-        print(">>>>>>>>", sentences[0])
     elif ": Lenta.ru" in sentences[0]:
         sentences[0] = sentences[0].replace(sentences[0][sentences[0].find(":"):sentences[0].find(".", sentences[0].find(":"), len(sentences[0])) + 3], "")
     elif "Читайте подробнее" in sentences[0]:
@@ -131,7 +129,6 @@ def metalinkscleaner(sentences): # Очистка всякого говнища
     
     elif "|" in sentences[0]:
         tempsplit = sentences[0].split()
-        print(">>>>", tempsplit)
         for i in range(len(tempsplit)-1):
             if tempsplit[i] == "|":
                 del(tempsplit[i+1])
