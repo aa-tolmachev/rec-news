@@ -1,99 +1,7 @@
-import re
-import numpy as np
-import collections
-
-from numpy import dot
-from numpy.linalg import norm
-import traceback
-import html
-
-def make_sentences(text):
-    sentences = re.split('\.\s',text)
-    sentences = [s for s in sentences if len(s) > 5]
-    return sentences
-
-def clean_tech(sentences):
-    sentences_new = []
-
-    for s in sentences:
-        
-        s_new = re.sub(r'\:.*\:.*', '', s)
-        s_new = re.sub(r'\W+$', '', s_new)
-        s_new = re.sub(r'^\W+', '', s_new)
-        s_new = re.sub(r'\|.*', '', s)
-        s_new = re.sub(r'\@.*', '', s)
-        
-        s_new = re.sub(r'\{.*\}', '' ,  s)
-
-        
-        s_new = re.sub(r'\S+\.\w\w$', '.' ,  s)
-        
-        s_new = re.sub(r'\:.*\:.*', '.' ,  s)
-
-
-        
-        sentences_new.append(s_new)
-        
-    return sentences_new
-        
-        
-def clean_duplicates(sentences):
-    #make simple vector to calc similarity
-    all_words = ' '.join(sentences).lower()
-    all_words = all_words.replace(' ','')
-
-    grams = []
-    n = 3
-
-    #find all grams
-    for step in range(len(all_words)-n+1):
-        gram = all_words[step:step+n]
-        grams.append(gram)
-
-    #calc frequency
-    c = collections.Counter(grams)
-    common_grams = c.most_common(20)
-    common_grams = np.array(common_grams)[:,0]
-
-    #similarities
-    new_sentences = []
-    for s , i in zip( sentences , range(len(sentences)) ):
-
-        s_cur = s.lower().replace(' ','')
-        s_prev_arr = sentences[:i]
-
-        s_cur_emb = np.zeros(len(common_grams))
-        for common_gram , cg_i in zip(common_grams, range(len(common_grams)) ):
-            s_cur_emb[cg_i] = s_cur.count(common_gram)
-
-        max_cos_sim = 0
-        for s_prev in s_prev_arr:
-            s_prev_emb = np.zeros(len(common_grams))
-            for common_gram , cg_i in zip(common_grams, range(len(common_grams)) ):
-                s_prev_emb[cg_i] = s_prev.count(common_gram)
-
-            cos_sim = dot(s_cur_emb, s_prev_emb)/(norm(s_cur_emb)*norm(s_prev_emb))
-            if cos_sim > max_cos_sim:
-                max_cos_sim = cos_sim
-
-        if max_cos_sim < 0.8:
-            new_sentences.append(s)
-    return new_sentences
-
-def add_dots(sentences):
-    new_sentences = []
-
-    for s in sentences:
-        s += '.'
-        s = re.sub(r'\.+', '.', s)
-        new_sentences.append(s)
-        
-    return new_sentences
-        
 def sub_html_symb(sentences): # Функция для очистки html спец. символов
     new_sentences = []
     for s in sentences:
-        s = html.unescape(s.replace("&nbsp;", "")).replace("\n", "").replace("\r", "").replace("\xa0", " ").replace("\u202f", " ")
+        s = html.unescape(s.replace("&nbsp;", " ")).replace("\n", " ").replace("\r", "").replace("\xa0", " ").replace("\u202f", " ")
         new_sentences.append(s)
 
     return new_sentences
@@ -111,23 +19,39 @@ def interfaxdecode(sentences): # Кодировка интерафкса
 
 def teleformat(sentences): # Форматирование в телеге
     sentences[0] = "<b>" + sentences[0] + "</b>\n"
-    
     return sentences
 
 def metalinkscleaner(sentences): # Очистка всякого говнища
+    if "Allhockey" in " ".join(sentences):
+        return ["", ""]
     if ":: РБК" in sentences[0]:
-        sentences[0] = sentences[0].replace(sentences[0][sentences[0].find("::")-1:sentences[0].find(".", sentences[0].find("::"), len(sentences[0]))], "")
+        print(">>>>>>>>", sentences[0])
+        sentences[0] = sentences[0].replace(sentences[0][sentences[0].find("::")-1:sentences[0].find(".", sentences[0].find("::"), len(sentences[0]))+1], "")
+        print(">>>>>>>>", sentences[0])
     elif ": Lenta.ru" in sentences[0]:
         sentences[0] = sentences[0].replace(sentences[0][sentences[0].find(":"):sentences[0].find(".", sentences[0].find(":"), len(sentences[0])) + 3], "")
+    elif "Читайте подробнее" in sentences[0]:
+        sentences[0] = sentences[0].replace(sentences[0][sentences[0].find(" -"):sentences[0].find(".", sentences[0].find(" -"), len(sentences[0]))], "")
+    elif " - МК" in sentences[0]:
+        sentences[0] = sentences[0].replace(" - МК", "")
+    elif " - 7Дней.ру" in sentences[0]:
+        sentences[0] = sentences[0].replace(" - 7Дней.ру", "")
+    
     elif "|" in sentences[0]:
         tempsplit = sentences[0].split()
+        print(">>>>", tempsplit)
         for i in range(len(tempsplit)-1):
             if tempsplit[i] == "|":
                 del(tempsplit[i+1])
                 del(tempsplit[i])
+                break
         sentences[0] = " ".join(tempsplit) + "."
-    elif "РИА Новости," in sentences[-1]:
-        sentences[-1] = sentences[-1].replace(sentences[-1][sentences[-1].find("РИА Новости,"):len(sentences[-1])], "")
+    elif "РИА Новости," in " ".join(sentences):
+        for i in range(len(sentences)):
+            if "РИА Новости," in sentences[i]:
+                    sentences[i] = sentences[i].replace(sentences[i][sentences[i].find("РИА Новости,"):len(sentences[i])+1], "")
+            if "Новости в России и мире," in sentences[i]:
+                    sentences[i] = sentences[i].replace(sentences[i][sentences[i].find("Новости в России и мире,"):len(sentences[i])+1], "")
     elif "znak Новости," in sentences[-1]:
         sentences[-1] = sentences[-1].replace(sentences[-1][sentences[-1].find("znak Новости,"):len(sentences[-1])], "")
     elif "/ Znak.com" in " ".join(sentences):
@@ -140,13 +64,13 @@ def metalinkscleaner(sentences): # Очистка всякого говнища
     elif "/ТАСС/" in " ".join(sentences):
         for i in range(len(sentences)):
             if "/ТАСС/" in sentences[i]:
-                sentences[i] = sentences[i].replace("/ТАСС/", "")
+                sentences[i] = sentences[i].replace("/ТАСС/.", "").replace("/ТАСС/", "")
         if len(sentences[0]) <= 2:
             del(sentences[0])
-    elif "©" in sentences[-1] or "Все права защищены" in sentences[-1]:
+    elif "©" in sentences[-1] or "Все права защищены" in sentences[-1] or "(c)" in sentences[-1] or "Copyright" in sentences[-1] or "Зарегистрировано Федеральной службой" in sentences[-1] :
         del(sentences[-1])
-    elif "Интерфакс:" in sentences[0]:
-        sentences[0] = sentences[0].replace("Интерфакс:", "")
+    elif "Интерфакс: " in sentences[0]:
+        sentences[0] = sentences[0].replace("Интерфакс: ", "")
     return sentences
 
 def bayancleaner(sentences): # [...]
@@ -181,6 +105,16 @@ def russianlang(text): # Проверка, что новость содержи�
         return None
     else:
         return text
+    
+def checkspaces(sentences):
+    for i in range(len(sentences)):
+        if len(sentences[i]) >= 1:
+            if sentences[i][-2] == " ":
+                sentences[i] = sentences[i][:-2] + sentences[i][-1]
+        else:
+            pass
+    return sentences
+    
 def fresh_text(text):
     try:       
         #1 - make array of sentences
@@ -211,19 +145,15 @@ def fresh_text(text):
         #9 - cleaning intext links
         sentences = links(sentences)
         
-        #10 - formatting telegram message
+        #10 - cheking spaces bedore dots
+        sentences = checkspaces(sentences)
+        
+        #11 - formatting telegram message
         sentences = teleformat(sentences)
     
-        #11 - generate fresh_text
+        #12 - generate fresh_text
         temptext = "".join(sentences[0:2])
         fresh_text = temptext + " " + ' '.join(sentences[2:])
         
-        #12 - final check for bad symbols and other languages
+        #13 - final check for bad symbols and other languages
         fresh_text = russianlang(fresh_text)
-    except:
-        traceback.print_exc()
-        fresh_text = text
-        
-    print(f'new text!: {fresh_text}')
-    
-    return fresh_text
