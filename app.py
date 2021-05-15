@@ -10,7 +10,8 @@ import fasttext
 
 from lib_summary import summary
 from lib_cleaner import cleaner
-from lib_persona import persona
+from lib_persona import gpt3
+# from lib_persona import persona
 
 from lib_log import simple_log
 global module_name
@@ -24,7 +25,7 @@ application = Flask(__name__)  # Change assignment here
 global model
 model = fasttext.load_model("./models/model.bin")
 global message_example
-with open('./models/message_example.json') as json_file:
+with open('./models/message_example.json', encoding='utf-8') as json_file:
     message_example = json.load(json_file)
 
 # тестовый вывод
@@ -101,8 +102,10 @@ def new_news():
             response['summary'] = clean_summary
             
             #4 - add persona sentence
-            persona_clean_summary = persona.add_persona_first_sentence(clean_summary)
+            # persona_clean_summary = persona.add_persona_first_sentence(clean_summary)
             #response['summary'] = persona_clean_summary
+            gpt3_clean_summury = gpt3.get_news_with_comment(clean_summary)
+            response['summary'] = gpt3_clean_summury
             
             
         step = simple_log.make_log('i',module_name , step, message=response )
