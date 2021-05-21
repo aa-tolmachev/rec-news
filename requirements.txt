@@ -18,3 +18,4 @@ numpy
 fasttext
 bs4
 markovify==0.8.3
+nltk==3.4.5
