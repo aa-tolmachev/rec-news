@@ -6,18 +6,18 @@ from typing import Iterable, Mapping, Optional
 from bs4 import BeautifulSoup
 import requests
 from PIL import Image
-import torch
+# import torch
 
-from lib_image.classifier import IMAGE_TRANSFORMS, Classifier
+# from lib_image.classifier import IMAGE_TRANSFORMS, Classifier
 
 YANDEX_IMAGES_URL = r'https://yandex.ru/images/search'
-IMAGE_CLASSIFIER = Classifier()
-IMAGE_CLASSIFIER.load_state_dict(
-    torch.load(
-        './models/image_clf.pt',
-        map_location=torch.device('cpu')
-    )
-)
+# IMAGE_CLASSIFIER = Classifier()
+# IMAGE_CLASSIFIER.load_state_dict(
+#     torch.load(
+#         './models/image_clf.pt',
+#         map_location=torch.device('cpu')
+#     )
+# )
 
 def get_images_by_description(text: str) -> Iterable[str]:
     response = requests.get(
@@ -68,10 +68,13 @@ def download_image(image_url: str) -> Optional[Image.Image]:
 
 def prepare_image(picture_url: str, summary: str) -> Optional[str]:
     original_picture = download_image(picture_url)
-    if picture_url and is_suitable_image(original_picture):
+    if original_picture:
         return picture_url
+    # if picture_url and is_suitable_image(original_picture):
+    #     return picture_url
     print(f'search image by text "{summary}"')
     for image_url in get_images_by_description(summary):
+        return image_url
         image = download_image(image_url)
         prediction = is_suitable_image(image)
         print(
