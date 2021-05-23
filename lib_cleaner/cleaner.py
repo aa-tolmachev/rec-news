@@ -238,10 +238,10 @@ def fresh_text(text):
         sentences = checkspaces(sentences)
         
         #11 - formatting telegram message
-        sentences = teleformat(sentences)
+        # sentences = teleformat(sentences)
     
         #12 - generate fresh_text
-        temptext = "".join(sentences[0:2])
+        temptext = " ".join(sentences[0:2])
         fresh_text = temptext + " " + ' '.join(sentences[2:])
         
         #13 - final check for bad symbols and other languages
