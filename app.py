@@ -12,14 +12,19 @@ import fasttext
 from lib_summary import summary
 from lib_cleaner import cleaner
 from lib_persona import gpt3
+
 from lib_image import prepare_image
+
+from lib_formatter import formatter
+
 # from lib_persona import persona
 
 from lib_log import simple_log
 global module_name
 module_name = os.path.basename(__file__) #module name file
 
-
+import nltk
+nltk.download('punkt')
 
 
 application = Flask(__name__)  # Change assignment here
@@ -119,15 +124,20 @@ def new_news():
             #3 - clean summary
             clean_summary = cleaner.fresh_text(url_main_text['summary'])
             response['summary'] = clean_summary
+
+            #4 format text for telegram
+            formatted_summary = formatter.format_message(clean_summary)
+            response['summary'] = formatted_summary
             
-            #4 - add persona sentence
+            #5 - add persona sentence
             # persona_clean_summary = persona.add_persona_first_sentence(clean_summary)
+
             #response['summary'] = persona_clean_summary
             gpt3_clean_summury = gpt3.get_news_with_comment(clean_summary)
             response['summary'] = gpt3_clean_summury
             step = simple_log.make_log('i',module_name , step, message=response )    
 
-            # 5 - make image
+            # 6 - make image
             response['picture_url'] = prepare_image(
                 picture_url=response['picture_url'],
                 summary=most_positive['title'] 
@@ -135,6 +145,11 @@ def new_news():
             step = simple_log.make_log('i',module_name , step, message=response )
 
         
+            summary_with_comment = gpt3.get_summary_with_comment(clean_summary, formatted_summary)
+            response['summary'] = summary_with_comment
+            
+        step = simple_log.make_log('i',module_name , step, message=response )
+
         
     except:
         #log error
