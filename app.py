@@ -19,7 +19,8 @@ from lib_log import simple_log
 global module_name
 module_name = os.path.basename(__file__) #module name file
 
-
+import nltk
+nltk.download('punkt')
 
 
 application = Flask(__name__)  # Change assignment here
