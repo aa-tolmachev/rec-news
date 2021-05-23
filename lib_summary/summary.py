@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re
 import traceback
 import os
+import random
 
 
 from lib_log import simple_log
@@ -103,4 +104,29 @@ def url_summary(url):
         traceback.print_exc()
         
     return url_main_text
+
+
+
+def add_link_to_news(summary: str, url:str) -> str:
+
+    url_names = ['ссылка','источник','оригинал','новость',
+                ,'линк','пруфы','докозательство','пруф','интересно'
+                ]
+
+    url_2nd = ['вот тут','взял отсюда','вот тут говорят','стырил отсюда','здесь оригинал','отсюда','вот отсюда',
+                ,'вот ловите','цитирую отсюда','здесь прочитал','здесь говорят','отсюда узнал'
+                ]
+
+
+    url_name = random.choice(url_names)
+    url_name = url_name + ', ' + random.choice(url_2nd)
+
+    summary_with_hyperlink = summary + '\n\n'
+    summary_with_hyperlink += f'<a href="{url}">{url_name}</a>'
+
+    return summary_with_hyperlink
+
+
+
+
     

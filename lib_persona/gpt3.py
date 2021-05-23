@@ -13,7 +13,7 @@ global module_name
 module_name = os.path.basename(__file__) #module name file
 
 # ограничение по длине комментария
-def get_few_sentences(sentences, max_len=150):
+def get_few_sentences(sentences, max_len=100):
     sentences_amount = 0
     total_length = 0
     for sentence in sentences:

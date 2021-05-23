@@ -142,6 +142,10 @@ def new_news():
         
             summary_with_comment = gpt3.get_summary_with_comment(clean_summary, formatted_summary)
             response['summary'] = summary_with_comment
+
+            # 6 - make link to summary
+            summary_with_hyperlink = summary.add_link_to_news(summary, url)
+            response['summary'] = summary_with_hyperlink
             
         step = simple_log.make_log('i',module_name , step, message=response )
 
