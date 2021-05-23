@@ -131,19 +131,19 @@ def new_news():
             
             #5 - add persona sentence
             # persona_clean_summary = persona.add_persona_first_sentence(clean_summary)
+            summary_with_comment = gpt3.get_summary_with_comment(clean_summary, formatted_summary)
+            response['summary'] = summary_with_comment
 
-            # 5 - make image
+
+            #6 - make image
             response['picture_url'] = prepare_image(
                 picture_url=response['picture_url'],
                 summary=most_positive['title'] 
             )
             step = simple_log.make_log('i',module_name , step, message=response )
 
-        
-            summary_with_comment = gpt3.get_summary_with_comment(clean_summary, formatted_summary)
-            response['summary'] = summary_with_comment
 
-            # 6 - make link to summary
+            #7 - make link to summary
             new_summary = response['summary']
             summary_with_hyperlink = summary.add_link_to_news(new_summary, url)
             response['summary'] = summary_with_hyperlink
