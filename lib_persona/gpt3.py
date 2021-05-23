@@ -13,7 +13,7 @@ global module_name
 module_name = os.path.basename(__file__) #module name file
 
 # ограничение по длине комментария
-def get_few_sentences(sentences, max_len=200):
+def get_few_sentences(sentences, max_len=150):
     sentences_amount = 0
     total_length = 0
     for sentence in sentences:
@@ -55,7 +55,7 @@ def get_summary_with_comment(clean_summary, formatted_summary):
     step = 0
 
     # делаем несколько попыток сгенерировать коммент
-    for _ in range(20):
+    for _ in range(5):
         comment = get_comment(clean_summary)
         if comment:
             comment = cleaner.fresh_text(comment)
@@ -63,7 +63,7 @@ def get_summary_with_comment(clean_summary, formatted_summary):
             formatted_summary = comment + '\n\n' + formatted_summary
             step = simple_log.make_log('end', module_name, step, message=f'added gpt3 generation')
             break
-        time.sleep(5)
+        time.sleep(1.5)
 
 
     return formatted_summary
