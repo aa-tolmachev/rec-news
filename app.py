@@ -12,7 +12,11 @@ import fasttext
 from lib_summary import summary
 from lib_cleaner import cleaner
 from lib_persona import gpt3
+
+from lib_image import prepare_image
+
 from lib_formatter import formatter
+
 # from lib_persona import persona
 
 from lib_log import simple_log
@@ -61,7 +65,10 @@ def new_news():
     global module_name
     step = 0
     
-    response = {'post_id':None,'summary':None,'sentiment':None,'proba':None,'url':None}
+    response = {
+        'sentiment':None, 'post_id':None, 'summary':None,
+        'proba':None, 'url':None, 'picture_url': None
+    }
     
     try:
         #0 - load input data
@@ -80,7 +87,15 @@ def new_news():
             proba = m_predict[1][0]
 
 
-            df = df.append({'post_id': post_id,'sentiment': sentiment.replace('__label__',''), 'proba':proba , 'url':url}, ignore_index=True)
+            df = df.append(
+                {
+                    'post_id': post_id,
+                    'sentiment': sentiment.replace('__label__',''),
+                    'proba':proba ,
+                    'url':url,
+                    'picture_url': n.get('picture_url')
+                }, ignore_index=True
+            )
         
 
         df = df[(df['sentiment'] != 'negative')][:]
@@ -95,6 +110,7 @@ def new_news():
             response['proba'] = most_positive['proba']
             response['sentiment'] = most_positive['sentiment']
             response['url'] = most_positive['url']
+            response['picture_url'] = most_positive['picture_url']
             
         step = simple_log.make_log('i',module_name , step, message=response )
         
@@ -114,10 +130,25 @@ def new_news():
             
             #5 - add persona sentence
             # persona_clean_summary = persona.add_persona_first_sentence(clean_summary)
+
+            #response['summary'] = persona_clean_summary
+            gpt3_clean_summury = gpt3.get_news_with_comment(clean_summary)
+            response['summary'] = gpt3_clean_summury
+            step = simple_log.make_log('i',module_name , step, message=response )    
+
+            # 6 - make image
+            response['picture_url'] = prepare_image(
+                picture_url=response['picture_url'],
+                summary=url_main_text['summary'] 
+            )
+            step = simple_log.make_log('i',module_name , step, message=response )
+
+        
             summary_with_comment = gpt3.get_summary_with_comment(clean_summary, formatted_summary)
             response['summary'] = summary_with_comment
             
         step = simple_log.make_log('i',module_name , step, message=response )
+
         
     except:
         #log error
