@@ -88,7 +88,8 @@ def new_news():
                     'sentiment': sentiment.replace('__label__',''),
                     'proba':proba ,
                     'url':url,
-                    'picture_url': n.get('picture_url')
+                    'picture_url': n.get('picture_url'),
+                    'title': n['title']
                 }, ignore_index=True
             )
         
@@ -129,7 +130,7 @@ def new_news():
             # 5 - make image
             response['picture_url'] = prepare_image(
                 picture_url=response['picture_url'],
-                summary=url_main_text['summary'] 
+                summary=most_positive['title'] 
             )
             step = simple_log.make_log('i',module_name , step, message=response )
 
