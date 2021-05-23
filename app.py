@@ -3,6 +3,7 @@ from flask import request
 import requests
 from flask import make_response
 import os
+from io import StringIO
 import json
 import pandas as pd
 import traceback
@@ -43,7 +44,11 @@ def test():
 
     
     for m in message_example['articles']:
-        print(f"post_id:{m['post_id']} , sentiment:{model.predict(m['title'][0][0])} , proba:{model.predict(m['title'][1][0])}")
+        print(
+            f"post_id:{m['post_id']} , "
+            f"sentiment:{model.predict(m['title'][0][0])} ,"
+            f" proba:{model.predict(m['title'][1][0])}"
+        )
     
     return "Hello World!"
 
@@ -118,7 +123,14 @@ def new_news():
         step = simple_log.make_log('e',module_name , step, message=response )
         #тест - для тестирования
         traceback.print_exc()
-        return "!", 200
+        error_message = '!'
+        if json_news.get('debug'):
+            exception_buffer = StringIO()
+            traceback.print_exc(file=exception_buffer)
+            exception_buffer.seek(0)
+            error_message =  exception_buffer.read()
+
+        return error_message, 500
         
     #for heroku
     response = json.dumps(response)
