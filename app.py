@@ -144,7 +144,8 @@ def new_news():
             response['summary'] = summary_with_comment
 
             # 6 - make link to summary
-            summary_with_hyperlink = summary.add_link_to_news(summary, url)
+            new_summary = response['summary']
+            summary_with_hyperlink = summary.add_link_to_news(new_summary, url)
             response['summary'] = summary_with_hyperlink
             
         step = simple_log.make_log('i',module_name , step, message=response )
