@@ -55,7 +55,7 @@ def get_summary_with_comment(clean_summary, formatted_summary):
     step = 0
 
     # делаем несколько попыток сгенерировать коммент
-    for _ in range(5):
+    for _ in range(3):
         comment = get_comment(clean_summary)
         if comment:
             comment = cleaner.fresh_text(comment)
