@@ -13,7 +13,7 @@ from lib_summary import summary
 from lib_cleaner import cleaner
 from lib_persona import gpt3
 
-from lib_image import prepare_image
+from lib_image.image_parser import prepare_image
 
 from lib_formatter import formatter
 
