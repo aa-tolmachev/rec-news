@@ -114,6 +114,7 @@ def teleformat(sentences): # Форматирование в телеге
     return sentences
 
 def metalinkscleaner(sentences): # Очистка всякого говнища
+    tempalltext = " ".join(sentences)
     if "Allhockey" in " ".join(sentences):
         return ["", ""]
     if ":: РБК" in sentences[0]:
@@ -126,7 +127,12 @@ def metalinkscleaner(sentences): # Очистка всякого говнища
         sentences[0] = sentences[0].replace(" - МК", "")
     elif " - 7Дней.ру" in sentences[0]:
         sentences[0] = sentences[0].replace(" - 7Дней.ру", "")
-    
+    elif "поддержке Федерального агентства" in tempalltext:
+        for i in range(len(sentences)):
+            if "поддержке Федерального агентства" in sentences[i]:
+                del(sentences[i])
+                break
+                
     elif "|" in sentences[0]:
         tempsplit = sentences[0].split()
         for i in range(len(tempsplit)-1):
@@ -135,7 +141,7 @@ def metalinkscleaner(sentences): # Очистка всякого говнища
                 del(tempsplit[i])
                 break
         sentences[0] = " ".join(tempsplit) + "."
-    elif "РИА Новости," in " ".join(sentences):
+    elif "РИА Новости," in tempalltext:
         for i in range(len(sentences)):
             if "РИА Новости," in sentences[i]:
                     sentences[i] = sentences[i].replace(sentences[i][sentences[i].find("РИА Новости,"):len(sentences[i])+1], "")
@@ -143,14 +149,14 @@ def metalinkscleaner(sentences): # Очистка всякого говнища
                     sentences[i] = sentences[i].replace(sentences[i][sentences[i].find("Новости в России и мире,"):len(sentences[i])+1], "")
     elif "znak Новости," in sentences[-1]:
         sentences[-1] = sentences[-1].replace(sentences[-1][sentences[-1].find("znak Новости,"):len(sentences[-1])], "")
-    elif "/ Znak.com" in " ".join(sentences):
+    elif "/ Znak.com" in tempalltext:
         for i in range(len(sentences)):
             if "/ Znak.com" in sentences[i]:
                 tempsent = sentences[i][::-1]
                 print(tempsent)
                 tempsent = tempsent.replace(tempsent[tempsent.find("moc.kanZ"):tempsent.find(".", tempsent.find("moc.kanZ")+6, len(tempsent))], "")
                 sentences[i] = tempsent[::-1][1:]
-    elif "/ТАСС/" in " ".join(sentences):
+    elif "/ТАСС/" in tempalltext:
         for i in range(len(sentences)):
             if "/ТАСС/" in sentences[i]:
                 sentences[i] = sentences[i].replace("/ТАСС/.", "").replace("/ТАСС/", "")
@@ -197,15 +203,21 @@ def russianlang(text): # Проверка, что новость содержи�
     
 def checkspaces(sentences):
     for i in range(len(sentences)):
-        if len(sentences[i]) >= 1:
+        if len(sentences[i]) >= 2:
             if sentences[i][-2] == " ":
                 sentences[i] = sentences[i][:-2] + sentences[i][-1]
         else:
             pass
     return sentences
     
+def checkdoublespaces(sentences):
+    for i in range(len(sentences)):
+        sentences[i] = sentences[i].replace("  ", " ").replace("   ", " ")
+    return sentences
+
 def fresh_text(text):
     try:       
+        print(text, "\n")
         #1 - make array of sentences
         sentences = make_sentences(text)
         
@@ -234,8 +246,9 @@ def fresh_text(text):
         #9 - cleaning intext links
         sentences = links(sentences)
         
-        #10 - cheking spaces bedore dots
+        #10 - cheking spaces bedore dots and shit-looking double and triplespaces
         sentences = checkspaces(sentences)
+        sentences = checkdoublespaces(sentences)
         
         #11 - formatting telegram message
         # sentences = teleformat(sentences)
