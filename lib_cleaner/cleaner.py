@@ -90,13 +90,8 @@ def add_dots(sentences):
         
     return new_sentences
         
-def sub_html_symb(sentences): # Функция для очистки html спец. символов
-    new_sentences = []
-    for s in sentences:
-        s = html.unescape(s.replace("&nbsp;", " ")).replace("\n", " ").replace("\r", "").replace("\xa0", " ").replace("\u202f", " ")
-        new_sentences.append(s)
-
-    return new_sentences
+def sub_html_text(s):
+    return html.unescape(s.replace("&nbsp;", " ").replace("&nbsp; ", " ")).replace("\n", " ").replace("\r", "").replace("\xa0", " ").replace("\u202f", " ")
 
 def interfaxdecode(sentences): # Кодировка интерафкса
     new_sentences = []
@@ -141,7 +136,7 @@ def metalinkscleaner(sentences): # Очистка всякого говнища
                 del(tempsplit[i])
                 break
         sentences[0] = " ".join(tempsplit) + "."
-    elif "РИА Новости," in tempalltext:
+    elif "РИА Новости," in tempalltext or "Новости в России и мире," in tempalltext:
         for i in range(len(sentences)):
             if "РИА Новости," in sentences[i]:
                     sentences[i] = sentences[i].replace(sentences[i][sentences[i].find("РИА Новости,"):len(sentences[i])+1], "")
@@ -216,12 +211,14 @@ def checkdoublespaces(sentences):
     return sentences
 
 def fresh_text(text):
-    try:       
-        print(text, "\n")
+    try:  
+        
+        #0 clean some shitty html symbols
+        text = sub_html_text(text)
+        
         #1 - make array of sentences
         sentences = make_sentences(text)
         
-
         #2 - in each sentence clean not words from start and end
         sentences = clean_tech(sentences)
 
@@ -231,33 +228,30 @@ def fresh_text(text):
         #4 - add dots to end of sentences
         sentences = add_dots(sentences)
         
-        #5 - subs html special symbols like &mdash and others
-        sentences = sub_html_symb(sentences)
-
-        #6 - decoding intefax
+        #5 - decoding intefax
         sentences = interfaxdecode(sentences)
         
-        #7 - cleaning some sh*t
+        #6 - cleaning some sh*t
         sentences = metalinkscleaner(sentences)
         
-        #8 - "[...]"
+        #7 - "[...]"
         sentences = bayancleaner(sentences)
         
-        #9 - cleaning intext links
+        #8 - cleaning intext links
         sentences = links(sentences)
         
-        #10 - cheking spaces bedore dots and shit-looking double and triplespaces
+        #9 - cheking spaces bedore dots and shit-looking double and triplespaces
         sentences = checkspaces(sentences)
         sentences = checkdoublespaces(sentences)
         
-        #11 - formatting telegram message
+        #10 - formatting telegram message
         sentences = teleformat(sentences)
     
-        #12 - generate fresh_text
+        #11 - generate fresh_text
         temptext = "".join(sentences[0:2])
         fresh_text = temptext + " " + ' '.join(sentences[2:])
         
-        #13 - final check for bad symbols and other languages
+        #12 - final check for bad symbols and other languages
         fresh_text = russianlang(fresh_text)
     except:
         traceback.print_exc()
