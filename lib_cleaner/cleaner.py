@@ -103,64 +103,64 @@ def interfaxdecode(sentences): # Кодировка интерафкса
         return sentences
     return new_sentences
 
-
-def teleformat(sentences): # Форматирование в телеге
-    sentences[0] = "<b>" + sentences[0] + "</b>\n"
-    return sentences
-
 def metalinkscleaner(sentences): # Очистка всякого говнища
     tempalltext = " ".join(sentences)
-    if "Allhockey" in " ".join(sentences):
+    if "Allhockey" in tempalltext:
+        return ["", ""]
+    if " - 7Дней.ру" in tempalltext:
         return ["", ""]
     if ":: РБК" in sentences[0]:
         sentences[0] = sentences[0].replace(sentences[0][sentences[0].find("::")-1:sentences[0].find(".", sentences[0].find("::"), len(sentences[0]))+1], "")
-    elif ": Lenta.ru" in sentences[0]:
+    if ": Lenta.ru" in sentences[0]:
         sentences[0] = sentences[0].replace(sentences[0][sentences[0].find(":"):sentences[0].find(".", sentences[0].find(":"), len(sentences[0])) + 3], "")
-    elif "Читайте подробнее" in sentences[0]:
+    if "Читайте подробнее" in sentences[0]:
         sentences[0] = sentences[0].replace(sentences[0][sentences[0].find(" -"):sentences[0].find(".", sentences[0].find(" -"), len(sentences[0]))], "")
-    elif " - МК" in sentences[0]:
+    if " - МК" in sentences[0]:
         sentences[0] = sentences[0].replace(" - МК", "")
-    elif " - 7Дней.ру" in sentences[0]:
-        sentences[0] = sentences[0].replace(" - 7Дней.ру", "")
-    elif "поддержке Федерального агентства" in tempalltext:
+    if "поддержке Федерального агентства" in tempalltext:
         for i in range(len(sentences)):
             if "поддержке Федерального агентства" in sentences[i]:
                 del(sentences[i])
                 break
                 
-    elif "|" in sentences[0]:
+    if "|" in sentences[0]:
         tempsplit = sentences[0].split()
         for i in range(len(tempsplit)-1):
             if tempsplit[i] == "|":
                 del(tempsplit[i+1])
                 del(tempsplit[i])
                 break
-        sentences[0] = " ".join(tempsplit) + "."
-    elif "РИА Новости," in tempalltext or "Новости в России и мире," in tempalltext:
+        sentences[0] = " ".join(tempsplit) + "."    
+    if "РИА Новости," in tempalltext or "Новости в России и мире," in tempalltext:
         for i in range(len(sentences)):
             if "РИА Новости," in sentences[i]:
-                    sentences[i] = sentences[i].replace(sentences[i][sentences[i].find("РИА Новости,"):len(sentences[i])+1], "")
+                sentences[i] = sentences[i].replace(sentences[i][sentences[i].find("РИА Новости,"):len(sentences[i])+1], "")
             if "Новости в России и мире," in sentences[i]:
-                    sentences[i] = sentences[i].replace(sentences[i][sentences[i].find("Новости в России и мире,"):len(sentences[i])+1], "")
-    elif "znak Новости," in sentences[-1]:
+                sentences[i] = sentences[i].replace(sentences[i][sentences[i].find("Новости в России и мире,"):len(sentences[i])+1], "")
+            if "Фото и видео с места событий" in sentences[i]:
+                sentences[i] = ""
+    if "znak Новости," in sentences[-1]:
         sentences[-1] = sentences[-1].replace(sentences[-1][sentences[-1].find("znak Новости,"):len(sentences[-1])], "")
-    elif "/ Znak.com" in tempalltext:
+    if "/ Znak.com" in tempalltext:
         for i in range(len(sentences)):
             if "/ Znak.com" in sentences[i]:
                 tempsent = sentences[i][::-1]
-                print(tempsent)
                 tempsent = tempsent.replace(tempsent[tempsent.find("moc.kanZ"):tempsent.find(".", tempsent.find("moc.kanZ")+6, len(tempsent))], "")
                 sentences[i] = tempsent[::-1][1:]
-    elif "/ТАСС/" in tempalltext:
+    if "/ТАСС/" in tempalltext:
         for i in range(len(sentences)):
             if "/ТАСС/" in sentences[i]:
                 sentences[i] = sentences[i].replace("/ТАСС/.", "").replace("/ТАСС/", "")
         if len(sentences[0]) <= 2:
             del(sentences[0])
-    elif "©" in sentences[-1] or "Все права защищены" in sentences[-1] or "(c)" in sentences[-1] or "Copyright" in sentences[-1] or "Зарегистрировано Федеральной службой" in sentences[-1] :
+    if "©" in sentences[-1] or "Все права защищены" in sentences[-1] or "(c)" in sentences[-1] or "Copyright" in sentences[-1] or "Зарегистрировано Федеральной службой" in sentences[-1]:
         del(sentences[-1])
-    elif "Интерфакс: " in sentences[0]:
+    if "Интерфакс: " in sentences[0]:
         sentences[0] = sentences[0].replace("Интерфакс: ", "")
+    if "Фото:" in tempalltext:
+        for i in range(len(sentences)):
+            if "Фото:" in sentences[i]:
+                sentences[i] = sentences[i].replace(sentences[i][sentences[i].find("Фото:"):len(sentences[i])], "")
     return sentences
 
 def bayancleaner(sentences): # [...]
@@ -179,22 +179,25 @@ def links(sentences): # Ссылки в тексте
     return sentences
 
 def russianlang(text): # Проверка, что новость содержит больше половины русских символов, а не странных кодировок, чтобы не проходило говно
-    alph = set("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
-    punc = set('''!()-[]{};?@#$%:'"\,./^&;*_ ''')
-    numb = set("0123456789")
-    rus = 0
-    t = 0
-    for k in text.lower():
-        if k not in punc and k not in numb:
-            if k in alph:
-                rus += 1
-                t += 1
-            else:
-                t += 1
-    if rus / t < 0.5:
-        return None
+    if len(text.replace(" ", "")):
+        alph = set("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
+        punc = set('''!()-[]{};?@#$%:'"\,./^&;*_ ''')
+        numb = set("0123456789")
+        rus = 0
+        t = 0
+        for k in text.lower():
+            if k not in punc and k not in numb:
+                if k in alph:
+                    rus += 1
+                    t += 1
+                else:
+                    t += 1
+        if rus / t < 0.5:
+            return None
+        else:
+            return text
     else:
-        return text
+        return None
     
 def checkspaces(sentences):
     for i in range(len(sentences)):
@@ -209,6 +212,15 @@ def checkdoublespaces(sentences):
     for i in range(len(sentences)):
         sentences[i] = sentences[i].replace("  ", " ").replace("   ", " ")
     return sentences
+
+def checkemptysentences(sentences):
+    newsent = []
+    for s in sentences:
+        if s == "" or s == " ":
+            pass
+        else:
+            newsent.append(s)
+    return newsent
 
 def fresh_text(text):
     try:  
@@ -240,19 +252,18 @@ def fresh_text(text):
         #8 - cleaning intext links
         sentences = links(sentences)
         
-        #9 - cheking spaces bedore dots and shit-looking double and triplespaces
+        #9 - cheking spaces before dots and shit-looking double and triplespaces
+        sentences = checkemptysentences(sentences)
         sentences = checkspaces(sentences)
         sentences = checkdoublespaces(sentences)
-        
-        #10 - formatting telegram message
-        sentences = teleformat(sentences)
     
-        #11 - generate fresh_text
-        temptext = "".join(sentences[0:2])
+        #10 - generate fresh_text
+        temptext = " ".join(sentences[0:2])
         fresh_text = temptext + " " + ' '.join(sentences[2:])
         
-        #12 - final check for bad symbols and other languages
-        fresh_text = russianlang(fresh_text)
+        #11 - final check for bad symbols and other languages       
+        fresh_text = russianlang(fresh_text).replace("  ", " ").replace("   ", " ")
+        
     except:
         traceback.print_exc()
         fresh_text = text
