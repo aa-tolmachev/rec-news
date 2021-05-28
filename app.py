@@ -3,6 +3,7 @@ from flask import request
 import requests
 from flask import make_response
 import os
+from io import StringIO
 import json
 import pandas as pd
 import traceback
@@ -10,13 +11,20 @@ import fasttext
 
 from lib_summary import summary
 from lib_cleaner import cleaner
-from lib_persona import persona
+from lib_persona import gpt3
+
+from lib_image.image_parser import prepare_image
+
+from lib_formatter import formatter
+
+# from lib_persona import persona
 
 from lib_log import simple_log
 global module_name
 module_name = os.path.basename(__file__) #module name file
 
-
+import nltk
+nltk.download('punkt')
 
 
 application = Flask(__name__)  # Change assignment here
@@ -24,7 +32,7 @@ application = Flask(__name__)  # Change assignment here
 global model
 model = fasttext.load_model("./models/model.bin")
 global message_example
-with open('./models/message_example.json') as json_file:
+with open('./models/message_example.json', encoding='utf-8') as json_file:
     message_example = json.load(json_file)
 
 # тестовый вывод
@@ -41,7 +49,11 @@ def test():
 
     
     for m in message_example['articles']:
-        print(f"post_id:{m['post_id']} , sentiment:{model.predict(m['title'][0][0])} , proba:{model.predict(m['title'][1][0])}")
+        print(
+            f"post_id:{m['post_id']} , "
+            f"sentiment:{model.predict(m['title'][0][0])} ,"
+            f" proba:{model.predict(m['title'][1][0])}"
+        )
     
     return "Hello World!"
 
@@ -53,7 +65,10 @@ def new_news():
     global module_name
     step = 0
     
-    response = {'post_id':None,'summary':None,'sentiment':None,'proba':None,'url':None}
+    response = {
+        'sentiment':None, 'post_id':None, 'summary':None,
+        'proba':None, 'url':None, 'picture_url': None
+    }
     
     try:
         #0 - load input data
@@ -72,7 +87,16 @@ def new_news():
             proba = m_predict[1][0]
 
 
-            df = df.append({'post_id': post_id,'sentiment': sentiment.replace('__label__',''), 'proba':proba , 'url':url}, ignore_index=True)
+            df = df.append(
+                {
+                    'post_id': post_id,
+                    'sentiment': sentiment.replace('__label__',''),
+                    'proba':proba ,
+                    'url':url,
+                    'picture_url': n.get('picture_url'),
+                    'title': n['title']
+                }, ignore_index=True
+            )
         
 
         df = df[(df['sentiment'] != 'negative')][:]
@@ -87,6 +111,7 @@ def new_news():
             response['proba'] = most_positive['proba']
             response['sentiment'] = most_positive['sentiment']
             response['url'] = most_positive['url']
+            response['picture_url'] = most_positive['picture_url']
             
         step = simple_log.make_log('i',module_name , step, message=response )
         
@@ -99,20 +124,46 @@ def new_news():
             #3 - clean summary
             clean_summary = cleaner.fresh_text(url_main_text['summary'])
             response['summary'] = clean_summary
+
+            #4 format text for telegram
+            formatted_summary = formatter.format_message(clean_summary)
+            response['summary'] = formatted_summary
             
-            #4 - add persona sentence
-            persona_clean_summary = persona.add_persona_first_sentence(clean_summary)
-            #response['summary'] = persona_clean_summary
-            
+            #5 - add persona sentence
+            # persona_clean_summary = persona.add_persona_first_sentence(clean_summary)
+            summary_with_comment = gpt3.get_summary_with_comment(clean_summary, formatted_summary)
+            response['summary'] = summary_with_comment
+
+
+            #6 - make image
+            response['picture_url'] = prepare_image(
+                picture_url=response['picture_url'],
+                summary=most_positive['title'] 
+            )
+            step = simple_log.make_log('i',module_name , step, message=response )
+
+
+            #7 - make link to summary
+            new_summary = response['summary']
+            summary_with_hyperlink = summary.add_link_to_news(new_summary, url)
+            response['summary'] = summary_with_hyperlink
             
         step = simple_log.make_log('i',module_name , step, message=response )
+
         
     except:
         #log error
         step = simple_log.make_log('e',module_name , step, message=response )
         #тест - для тестирования
         traceback.print_exc()
-        return "!", 200
+        error_message = '!'
+        if json_news.get('debug'):
+            exception_buffer = StringIO()
+            traceback.print_exc(file=exception_buffer)
+            exception_buffer.seek(0)
+            error_message =  exception_buffer.read()
+
+        return error_message, 500
         
     #for heroku
     response = json.dumps(response)

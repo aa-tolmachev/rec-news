@@ -1,20 +1,11 @@
-httplib2
 pandas
-datetime
-dj-database-url==0.4.1
-Flask==0.12
-Django==1.11
-gunicorn==19.6.0
-psycopg2
-whitenoise==3.3.0
-requests==2.9.1
-asyncio 
-telepot
-python-telegram-bot
-telebot
-pyTelegramBotAPI
-matplotlib
-numpy
 fasttext
-bs4
+lxml
+Flask==0.12
+requests==2.9.1 
 markovify==0.8.3
+nltk==3.4.5
+# torch==1.6.0
+# torchvision==0.6.0
+beautifulsoup4==4.6.0
+pillow==8.2.0
