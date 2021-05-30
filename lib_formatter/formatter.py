@@ -4,7 +4,8 @@ from nltk.tokenize import sent_tokenize
 def format_message(text):
     sentences = sent_tokenize(text, language='russian')
     sentences[0] = "<b>" + sentences[0] + "</b>\n"
-    result = " ".join(sentences)
+    temptext = "".join(sentences[0:2])
+    result = temptext + " " + " ".join(sentences[2:])
     return result
 
 def format_comment(comment):
