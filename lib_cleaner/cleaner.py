@@ -265,7 +265,7 @@ def fresh_text(text):
         sentences = checkdoublespaces(sentences)
     
         #10 - generate fresh_text
-        temptext = "".join(sentences[0:2])
+        temptext = " ".join(sentences[0:2])
         fresh_text = temptext + " " + ' '.join(sentences[2:])
         
         #11 - final check for bad symbols and other languages       
