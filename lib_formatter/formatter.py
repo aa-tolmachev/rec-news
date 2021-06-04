@@ -3,7 +3,7 @@ from nltk.tokenize import sent_tokenize
 
 def format_message(text):
     sentences = sent_tokenize(text, language='russian')
-    sentences[0] = "<b>" + sentences[0] + "</b>\n"
+    sentences[0] = "<b>" + sentences[0] + "</b>\n\n"
     temptext = "".join(sentences[0:2])
     result = temptext + " " + " ".join(sentences[2:])
     return result

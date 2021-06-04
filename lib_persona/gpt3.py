@@ -60,7 +60,7 @@ def get_summary_with_comment(clean_summary, formatted_summary):
         if comment:
             comment = cleaner.fresh_text(comment)
             comment = formatter.format_comment(comment)
-            formatted_summary = comment + '\n\n' + formatted_summary
+            formatted_summary = formatted_summary + '\n\n' + '💬 ' + comment
             step = simple_log.make_log('end', module_name, step, message=f'added gpt3 generation')
             break
         time.sleep(1.5)
