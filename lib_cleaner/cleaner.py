@@ -229,6 +229,11 @@ def checkemptysentences(sentences):
             newsent.append(s)
     return newsent
 
+def smthngswrng(text):
+    if "ramblerComments" in text or "window._settings" in text:
+        return None
+    return text
+
 def fresh_text(text):
     try:  
         
@@ -270,7 +275,7 @@ def fresh_text(text):
         
         #11 - final check for bad symbols and other languages       
         fresh_text = russianlang(fresh_text).replace("  ", " ").replace("   ", " ")
-        
+        fresh_text = smthngswrng(fresh_text)
     except:
         traceback.print_exc()
         fresh_text = text
